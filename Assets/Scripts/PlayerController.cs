@@ -1,12 +1,13 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
 	[SerializeField] private float moveSpeed = 5f;
 	[SerializeField] private float jumpForce = 10f;
 	[SerializeField] public LayerMask groundLayer;
-
+	[SerializeField] private AudioSource jumpAudio;
 
 	public Transform groundCheck;
 
@@ -35,11 +36,13 @@ public class PlayerController : MonoBehaviour
 		rb_player.velocity = new Vector2(moveInput * moveSpeed, rb_player.velocity.y);
 		if (Input.GetButtonDown("Jump") && IsGrounded())
 		{
+			jumpAudio.Play();
 			rb_player.velocity = new Vector2(rb_player.velocity.x, jumpForce);
 		}
 		UpdateAniamtion();
-		
+		closeGame();
 	}
+
 	private void UpdateAniamtion() 
 	{
 		MovementState state;
@@ -72,5 +75,14 @@ public class PlayerController : MonoBehaviour
 	private bool IsGrounded() 
 	{
 		return Physics2D.BoxCast(coll2D.bounds.center, coll2D.bounds.size, 0f, Vector2.down, 0.1f, groundLayer);
+	}
+
+	//Close the game mid stage
+	private void closeGame()
+	{
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			SceneManager.LoadScene("End");
+		}
 	}
 }
